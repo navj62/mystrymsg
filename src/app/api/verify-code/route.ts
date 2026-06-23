@@ -1,19 +1,52 @@
 import dbConnect from '@/lib/dbConnect';
 import UserModel from '@/model/User';
+import { verifySchema } from '@/schemas/verifySchema';
+import { z } from 'zod';
+
+const verifyCodeSchema = z.object({
+  username: z.string().min(1, 'Username is required'),
+  code: verifySchema.shape.code,
+});
 
 export async function POST(request: Request) {
   // Connect to the database
   await dbConnect();
 
   try {
-    const { username, code } = await request.json();
-    const decodedUsername = decodeURIComponent(username);
+    const body = await request.json().catch(() => null);
+    if (!body) {
+      return Response.json(
+        { success: false, message: 'Invalid request body' },
+        { status: 400 }
+      );
+    }
+
+    const parsed = verifyCodeSchema.safeParse(body);
+    if (!parsed.success) {
+      return Response.json(
+        {
+          success: false,
+          message: parsed.error.issues[0]?.message ?? 'Invalid input',
+        },
+        { status: 400 }
+      );
+    }
+
+    const decodedUsername = decodeURIComponent(parsed.data.username);
+    const { code } = parsed.data;
     const user = await UserModel.findOne({ username: decodedUsername });
 
     if (!user) {
       return Response.json(
         { success: false, message: 'User not found' },
         { status: 404 }
+      );
+    }
+
+    if (user.isVerified) {
+      return Response.json(
+        { success: true, message: 'Account is already verified' },
+        { status: 200 }
       );
     }
 

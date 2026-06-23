@@ -99,7 +99,7 @@ export default function Home() {
               className="px-8 py-6 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg shadow-lg hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105"
               asChild
             >
-              <Link href="/send-feedback">Start Sharing Feedback</Link>
+              <Link href="/sign-up">Start Sharing Feedback</Link>
             </Button>
           </motion.div>
         </main>

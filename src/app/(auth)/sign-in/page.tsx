@@ -47,7 +47,7 @@ export default function SignInForm() {
 
     if (result?.url) {
       toast.success('Signed in successfully!');
-      router.replace('/Dashboard');
+      router.replace('/dashboard');
     }
   };
 

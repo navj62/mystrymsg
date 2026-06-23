@@ -1,4 +1,4 @@
-import { resend } from "@/lib/resend";
+import { getResend } from "@/lib/resend";
 import VerificationEmail from "../../emails/VerificationEmail";
 import { ApiResponse } from "@/types/ApiResponse";
 import { ReactElement } from "react";
@@ -22,7 +22,7 @@ export async function sendVerificationEmail(
       return { success: false, message: "Invalid email template" };
     }
 
-    const response = await resend.emails.send({
+    const response = await getResend().emails.send({
       from: process.env.EMAIL_FROM || "onboarding@resend.dev",
       to: email,
       subject: "Mystery Message Verification Code",

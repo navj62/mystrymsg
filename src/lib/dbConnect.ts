@@ -1,28 +1,44 @@
 import mongoose from 'mongoose';
 
-type ConnectionObject = {
-  isConnected?: number;
-};
+interface MongooseCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+}
 
-const connection: ConnectionObject = {};
+// Cache the connection on the global object so it survives dev hot-reloads
+// and is reused across serverless invocations instead of reconnecting.
+declare global {
+  // eslint-disable-next-line no-var
+  var mongooseCache: MongooseCache | undefined;
+}
 
-async function dbConnect(): Promise<void> {
-  // Check if we have a connection to the database or if it's currently connecting
-  if (connection.isConnected) {
-    return;
+const cached: MongooseCache =
+  globalThis.mongooseCache ?? { conn: null, promise: null };
+globalThis.mongooseCache = cached;
+
+async function dbConnect(): Promise<typeof mongoose> {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error('Please define the MONGODB_URI environment variable');
+  }
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URI, { bufferCommands: false });
   }
 
   try {
-    // Attempt to connect to the database
-    const db = await mongoose.connect(process.env.MONGODB_URI || '', {});
-
-    connection.isConnected = db.connections[0].readyState;
+    cached.conn = await cached.promise;
   } catch (error) {
-    console.error('Database connection failed:', error);
-
-    // Graceful exit in case of a connection error
-    process.exit(1);
+    // Reset so the next call retries instead of awaiting a rejected promise.
+    cached.promise = null;
+    throw error;
   }
+
+  return cached.conn;
 }
 
 export default dbConnect;

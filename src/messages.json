@@ -1,0 +1,27 @@
+[
+  {
+    "title": "Message from Admin",
+    "content": "Thanks for signing up! We’re glad to have you here.",
+    "received": "2025-08-20T10:15:00Z"
+  },
+  {
+    "title": "Message from Support",
+    "content": "Your subscription is about to expire in 3 days.",
+    "received": "2025-08-19T08:45:00Z"
+  },
+  {
+    "title": "Message from Updates Team",
+    "content": "We’ve added new features to improve your experience.",
+    "received": "2025-08-18T14:30:00Z"
+  },
+  {
+    "title": "Message from Security",
+    "content": "Unusual login detected from a new device.",
+    "received": "2025-08-17T22:00:00Z"
+  },
+  {
+    "title": "Message from Feedback",
+    "content": "Tell us what you think and help us improve.",
+    "received": "2025-08-16T12:20:00Z"
+  }
+]

@@ -171,7 +171,7 @@ function UserDashboard() {
                     {messages.length > 0 ? (
                     messages.map((message) => (
                         <MessageCard
-                        key={(message as any)._id}
+                        key={String(message._id)}
                         message={message}
                         onMessageDelete={handleDeleteMessage}
                         // Assuming MessageCard is styled to fit the dark theme

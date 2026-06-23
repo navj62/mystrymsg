@@ -35,7 +35,7 @@ function UserDashboard() {
   const acceptMessages = watch('acceptMessages');
 
   const handleDeleteMessage = (messageId: string) => {
-    setMessages(messages.filter((message) => message._id !== messageId));
+    setMessages(messages.filter((message) => String(message._id) !== messageId));
   };
 
   const fetchAcceptMessages = useCallback(async () => {

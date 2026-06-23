@@ -1,16 +1,10 @@
 import { GoogleGenAI, Type } from "@google/genai";
+import { FALLBACK_QUESTIONS, parseSuggestions } from "@/lib/suggestions";
 
 export const runtime = "nodejs";
 
 const PROMPT =
   "Create a list of three open-ended and engaging questions formatted as a single string. Each question should be separated by '||'. These questions are for an anonymous social messaging platform, like Qooh.me, and should be suitable for a diverse audience. Avoid personal or sensitive topics, focusing instead on universal themes that encourage friendly interaction. For example, your output should be structured like this: 'What's a hobby you've recently started?||If you could have dinner with any historical figure, who would it be?||What's a simple thing that makes you happy?'. Ensure the questions are intriguing, foster curiosity, and contribute to a positive and welcoming conversational environment.";
-
-// Used when Gemini is unavailable / rate-limited so the UI still works.
-const FALLBACK_QUESTIONS = [
-  "What's a hobby you've recently started?",
-  "If you could travel anywhere right now, where would you go?",
-  "What's a small thing that made you smile today?",
-];
 
 export async function POST() {
   const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
@@ -49,10 +43,7 @@ export async function POST() {
     }
 
     const parsed = JSON.parse(result) as { questionsString: string };
-    const questions = parsed.questionsString
-      .split("||")
-      .map((q) => q.trim())
-      .filter(Boolean);
+    const questions = parseSuggestions(parsed.questionsString);
 
     return Response.json({ success: true, questions }, { status: 200 });
   } catch (error) {

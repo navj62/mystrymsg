@@ -8,7 +8,6 @@ interface MongooseCache {
 // Cache the connection on the global object so it survives dev hot-reloads
 // and is reused across serverless invocations instead of reconnecting.
 declare global {
-  // eslint-disable-next-line no-var
   var mongooseCache: MongooseCache | undefined;
 }
 

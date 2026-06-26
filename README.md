@@ -77,3 +77,29 @@ src/
   schemas/        # Zod validation schemas (shared client/server)
   lib/, helpers/  # DB connection, email, utils
 ```
+
+## Deployment (Vercel)
+
+The app builds with no secrets and is a standard Next.js project — deploys
+cleanly on Vercel.
+
+1. **Database** — create a MongoDB Atlas cluster. Under **Network Access**,
+   allow `0.0.0.0/0` (Vercel's serverless IPs are dynamic). Copy the SRV
+   connection string into `MONGODB_URI`.
+2. **Import the repo** into Vercel (New Project → import from GitHub).
+3. **Set environment variables** in the Vercel project (see
+   [`.env.example`](.env.example)):
+   - `MONGODB_URI`, `NEXTAUTH_SECRET` (`openssl rand -base64 32`)
+   - `NEXTAUTH_URL` = your deployed URL (e.g. `https://<project>.vercel.app`)
+   - `RESEND_API_KEY`, and `EMAIL_FROM` once a domain is verified (below)
+   - `GEMINI_API_KEY` (optional)
+4. **Deploy.** Vercel runs `next build` automatically.
+
+### Sending verification emails in production
+
+Resend's sandbox sender (`onboarding@resend.dev`) only delivers to the Resend
+account owner's address. For real users, verify a domain at
+[resend.com/domains](https://resend.com/domains), add the SPF/DKIM DNS records,
+then set `EMAIL_FROM` to an address on that domain
+(e.g. `True Feedback <noreply@yourdomain.com>`). Until then, sign-ups with other
+emails will fail at the email step in production.

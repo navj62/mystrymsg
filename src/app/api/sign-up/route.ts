@@ -19,7 +19,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const { username, email, password } = body;
+    const { username, password } = body;
+    // Normalize email so casing/whitespace can't create duplicate accounts
+    // or break email delivery (e.g. "X@Gmail.com" vs "x@gmail.com").
+    const email =
+      typeof body.email === 'string'
+        ? body.email.trim().toLowerCase()
+        : body.email;
 
     // Basic validation
     if (!username || !email || !password) {

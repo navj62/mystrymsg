@@ -21,10 +21,13 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Missing credentials');
         }
         try {
+          // Match emails case-insensitively (stored lowercase at signup);
+          // usernames stay case-sensitive.
+          const identifier = credentials.identifier?.trim() ?? '';
           const user = await UserModel.findOne({
             $or: [
-              { email: credentials.identifier },
-              { username: credentials.identifier },
+              { email: identifier.toLowerCase() },
+              { username: identifier },
             ],
           });
           if (!user) {

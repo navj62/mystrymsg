@@ -87,6 +87,24 @@ export async function POST(request: Request) {
     );
 
     if (!emailResponse.success) {
+      // Dev fallback: Resend's free tier only delivers to the account owner's
+      // address, so signing up with any other email fails to send. In
+      // development, don't dead-end — log the code so the verify step still
+      // works locally. In production, fail loudly (configure a verified domain).
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+          `[DEV] Email delivery failed; verification code for ${email} (@${username}): ${verifyCode}`
+        );
+        return Response.json(
+          {
+            success: true,
+            message:
+              'User registered. Email delivery is not configured — check the server console for your verification code.',
+          },
+          { status: 201 }
+        );
+      }
+
       return Response.json(
         { success: false, message: 'Failed to send verification email' },
         { status: 500 }
